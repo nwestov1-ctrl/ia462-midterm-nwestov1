@@ -1,0 +1,11 @@
+Sigma Rule
+
+Nathan Westover
+
+11/23/2026
+
+Event 4104
+
+4104 is all of the logging of Powershell script blocking, this is valuable information because the event detects the decoded code and the real command.
+
+4104 looks for suspicious things inside of the script text, meaning this event displayed an attempt to push suspicious coding.
