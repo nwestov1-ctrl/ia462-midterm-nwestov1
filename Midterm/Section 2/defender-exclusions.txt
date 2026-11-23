@@ -1,0 +1,8 @@
+﻿
+
+ExclusionPath      : {C:\Users\nayna\Documents\python-app}
+ExclusionExtension : 
+ExclusionProcess   : 
+
+
+

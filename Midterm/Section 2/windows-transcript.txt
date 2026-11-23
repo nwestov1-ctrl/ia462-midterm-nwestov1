@@ -1,0 +1,188 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261122212142
+Username: BICMONEYLAPTOP\nayna
+RunAs User: BICMONEYLAPTOP\nayna
+Configuration Name: 
+Machine: BICMONEYLAPTOP (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+Process ID: 27440
+PSVersion: 5.1.26100.9711
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9711
+BuildVersion: 10.0.26100.9711
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is .\windows-transcript.txt
+PS C:\Users\nayna\Documents\midterm-section2> Get-MpComputerStatus | Format-List AMServiceEnabled, AntivirusEnabled, RealTimeProtectionEnabled, IsTamperProtected
+
+
+AMServiceEnabled          : True
+AntivirusEnabled          : True
+RealTimeProtectionEnabled : True
+IsTamperProtected         : True
+
+
+
+PS C:\Users\nayna\Documents\midterm-section2> Get-NetFirewallProfile | Format-Table Name, Enabled, DefaultInboundAction, DefaultOutboundAction
+
+Name    Enabled DefaultInboundAction DefaultOutboundAction
+----    ------- -------------------- ---------------------
+Domain     True        NotConfigured         NotConfigured
+Private    True        NotConfigured         NotConfigured
+Public     True        NotConfigured         NotConfigured
+
+
+PS C:\Users\nayna\Documents\midterm-section2> Get-SmbServerConfiguration | Select-Object EnableSMB1Protocol
+
+EnableSMB1Protocol
+------------------
+             False
+
+
+PS C:\Users\nayna\Documents\midterm-section2> auditpol /set /subcategory:"Process Creation" /success:enable /failure:enable
+The command was successfully executed.
+PS C:\Users\nayna\Documents\midterm-section2> reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit" /v ProcessCreationIncludeCmdLine_Enabled /t REG_DWORD /d 1 /f
+The operation completed successfully.
+PS C:\Users\nayna\Documents\midterm-section2> $sbl = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging"
+PS C:\Users\nayna\Documents\midterm-section2> if (-not (Test-Path $sbl)) { New-Item -Path $sbl -Force | Out-Null }
+PS C:\Users\nayna\Documents\midterm-section2> Set-ItemProperty -Path $sbl -Name EnableScriptBlockLogging -Value 1
+PS C:\Users\nayna\Documents\midterm-section2> Get-ItemProperty $sbl | Select-Object EnableScriptBlockLogging
+
+EnableScriptBlockLogging
+------------------------
+                       1
+
+
+PS C:\Users\nayna\Documents\midterm-section2> Get-Service Sysmon64
+
+Status   Name               DisplayName
+------   ----               -----------
+Running  Sysmon64           Sysmon64
+
+
+PS C:\Users\nayna\Documents\midterm-section2> Copy-Item "$env:USERPROFILE\Downloads\lab3-win\sysmonconfig.xml" .\sysmonconfig.xml
+PS C:\Users\nayna\Documents\midterm-section2> Get-ChildItem .\sysmonconfig.xml
+
+
+    Directory: C:\Users\nayna\Documents\midterm-section2
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        11/18/2026   8:04 PM         123257 sysmonconfig.xml
+
+
+PS C:\Users\nayna\Documents\midterm-section2> clear
+PS C:\Users\nayna\Documents\midterm-section2> Get-Service Sysmon64
+
+Status   Name               DisplayName
+------   ----               -----------
+Running  Sysmon64           Sysmon64
+
+
+PS C:\Users\nayna\Documents\midterm-section2> Get-ChildItem .\sysmonconfig.xml
+
+
+    Directory: C:\Users\nayna\Documents\midterm-section2
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        11/18/2026   8:04 PM         123257 sysmonconfig.xml
+
+
+PS C:\Users\nayna\Documents\midterm-section2> net use \\localhost\c$ /user:fakeuser WrongPassword123
+System error 86 has occurred.
+
+The specified network password is not correct.
+PS C:\Users\nayna\Documents\midterm-section2> net use \\localhost\c$ /user:fakeuser WrongPassword123
+System error 86 has occurred.
+
+The specified network password is not correct.
+PS C:\Users\nayna\Documents\midterm-section2> $cmd = 'Write-Host "Midterm - simulated encoded PowerShell activity"'
+PS C:\Users\nayna\Documents\midterm-section2> $b64 = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($cmd))
+PS C:\Users\nayna\Documents\midterm-section2> powershell.exe -EncodedCommand $b64
+Midterm - simulated encoded PowerShell activity
+PS C:\Users\nayna\Documents\midterm-section2> net user midtermsuspect P@ssw0rd! /add
+The command completed successfully.
+PS C:\Users\nayna\Documents\midterm-section2> foreach ($id in 4624,4625,4688,4720) { Get-WinEvent -FilterHashtable @{LogName='Security'; Id=$id} -MaxEvents 2 -ErrorAction SilentlyContinue | Select-Object TimeCreated, Id, @{n='Msg';e={($_.Message -split "`n")[0]}} | Format-Table -Wrap }
+
+TimeCreated             Id Msg
+-----------             -- ---
+11/22/2026 9:34:35 PM 4624 An account was successfully logged on.
+11/22/2026 9:30:24 PM 4624 An account was successfully logged on.
+
+
+
+TimeCreated             Id Msg
+-----------             -- ---
+11/22/2026 9:38:34 PM 4625 An account failed to log on.
+11/18/2026 8:19:47 PM 4625 An account failed to log on.
+
+
+
+TimeCreated             Id Msg
+-----------             -- ---
+11/22/2026 9:39:34 PM 4688 A new process has been created.
+11/22/2026 9:38:45 PM 4688 A new process has been created.
+
+
+
+TimeCreated             Id Msg
+-----------             -- ---
+11/22/2026 9:38:45 PM 4720 A user account was created.
+11/18/2026 8:19:55 PM 4720 A user account was created.
+
+
+PS C:\Users\nayna\Documents\midterm-section2> Get-WinEvent -LogName "Microsoft-Windows-PowerShell/Operational" -MaxEvents 50 | Where-Object { $_.Id -eq 4104 } | Select-Object -First 2 TimeCreated, Id, @{n='Snippet';e={($_.Message -split "`n")[0..2] -join ' '}} | Format-Table -Wrap
+
+TimeCreated             Id Snippet
+-----------             -- -------
+11/22/2026 9:40:10 PM 4104 Creating Scriptblock text (1 of 1): prompt
+11/22/2026 9:40:10 PM 4104 Creating Scriptblock text (1 of 1): {($_.Message -split
+                           "`n")[0]}
+
+
+PS C:\Users\nayna\Documents\midterm-section2> Get-WinEvent -FilterHashtable @{LogName='Security'} -MaxEvents 100 | ConvertTo-Json -Depth 5 | Out-File -Encoding utf8 .\security-events.json
+PS C:\Users\nayna\Documents\midterm-section2> Get-ChildItem .\security-events.json
+
+
+    Directory: C:\Users\nayna\Documents\midterm-section2
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        11/22/2026   9:46 PM         583712 security-events.json
+
+
+PS C:\Users\nayna\Documents\midterm-section2> $app = "$env:USERPROFILE\Documents\python-app"
+PS C:\Users\nayna\Documents\midterm-section2> New-Item -ItemType Directory -Force -Path $app | Out-Null
+PS C:\Users\nayna\Documents\midterm-section2> Add-MpPreference -ExclusionPath $app
+PS C:\Users\nayna\Documents\midterm-section2> Get-MpPreference | Select-Object ExclusionPath, ExclusionExtension, ExclusionProcess | Format-List
+
+
+ExclusionPath      : {C:\Users\nayna\Documents\python-app}
+ExclusionExtension :
+ExclusionProcess   :
+
+
+
+PS C:\Users\nayna\Documents\midterm-section2> Get-MpPreference | Select-Object ExclusionPath, ExclusionExtension, ExclusionProcess | Format-List | Out-File -Encoding utf8 .\defender-exclusions.txt
+PS C:\Users\nayna\Documents\midterm-section2> Get-Content .\defender-exclusions.txt
+
+
+ExclusionPath      : {C:\Users\nayna\Documents\python-app}
+ExclusionExtension :
+ExclusionProcess   :
+
+
+
+PS C:\Users\nayna\Documents\midterm-section2> Stop-Transcript
+**********************
+Windows PowerShell transcript end
+End time: 20261122215152
+**********************
